@@ -4,6 +4,7 @@ import './App.css';
 import { useEffect, useState } from 'react';
 
 import User from './User';
+import CuteCritter from './CuteCritter';
 
 
 
@@ -15,8 +16,11 @@ function App() {
   const[users, setUsers] = useState( [] )
   console.log("State of Our Users: ", users)
 
-  const[loggedInUser, setLoggedInUser] = useState( {} )
-  console.log("State of Our loggedInUser: ", loggedInUser)
+    const[loggedInUser, setLoggedInUser] = useState( {} )
+    console.log("State of Our LoggedInUser: ", loggedInUser)
+
+  const[cuteCrtitters, setCuteCrtitters] = useState( [] )
+  console.log("State of Our CuteCrtitters: ", cuteCrtitters)
 
 
 
@@ -24,15 +28,32 @@ function App() {
 
   useEffect( ()=>{
 
+
+    // GET Fetch()  for Users
     fetch("http://localhost:9292/users")
     .then(r => r.json())
-    .then(fetchedUsers =>{ console.log(fetchedUsers)
+    .then(fetchedUsers =>{ console.log("fetchedUsers >  ", fetchedUsers)
     
       setUsers(fetchedUsers)
 
     })
 
+
+    // GET Fetch()  for CuteCritters
+    fetch("http://localhost:9292/cute_critters")
+    .then(r => r.json())
+    .then(fetchedCuteCrtitters =>{ console.log("fetchedCuteCrtitters >  ", fetchedCuteCrtitters)
+    
+      setCuteCrtitters(fetchedCuteCrtitters)
+
+    })
+
+
   } , [] )
+
+
+
+
 
 
 
@@ -74,9 +95,16 @@ function App() {
   //X// if(loggedInUser === {}){ 
 
 
+
+
+
+
+
+
   const inAppJsDeleteUser =(userToDelete)=>{
-    console.log("DELETE In App.Js")
-    console.log("User to DELETE  :(  :  ", userToDelete)
+    console.log("DELETE In App.Js")  //
+    console.log("User to DELETE  :(  :  ", userToDelete)  //
+    console.log("❗️❗️👋👀 REMEMBER - WE SHOULD BE HITTING A PRY 👋👀❗️❗️")   //
 
 
     const id = userToDelete.id
@@ -88,8 +116,8 @@ function App() {
       method: 'DELETE'
 
     })
-    // .then(r => r.json())
-    // .then(theUserThatWasDeleted => { console.log("theUserThatWasDeleted ->  ", theUserThatWasDeleted) 
+    .then(r => r.json())
+    .then(theUserThatWasDeleted => { console.log("theUserThatWasDeleted ->  ", theUserThatWasDeleted) 
   
 
       //// * * * *  FRONTEND Rendering  * * * *  //
@@ -98,7 +126,7 @@ function App() {
       setUsers( [...usersRemaining] )
 
   
-    // })
+    })
     
     //// 
     //✅// filter - filtering our previous user BEFORE the DELETE
@@ -112,15 +140,71 @@ function App() {
 
 
 
+
+
+
+  const[nameForCritter, setNameForCritter] = useState( "" )
+  const[imageForCritter, setImageForCritter] = useState( "" )
+  const[userForCritter, setUserForCritter] = useState( "" )
+
+  const addNewCritterFrontendAndBackendProcess =(synthEvent)=>{
+    console.log("In addNewCritterFrontendAndBackendProcess")  //
+    synthEvent.preventDefault()
+    // event.preventDefault()
+
+
+      let critterObjToPOST ={
+        name: nameForCritter,
+        image: imageForCritter,
+        user_id: userForCritter
+      }
+      console.log("HEY! WE'RE ABOUT TO POST THIS! ->  ", critterObjToPOST)  //
+      console.log("❗️❗️👋👀 REMEMBER - WE SHOULD BE HITTING A PRY 👋👀❗️❗️")   //
+
+
+    // Just For Reference:  fetch("http://localhost:9292/cute_critters", { method, headers, body } )
+    fetch("http://localhost:9292/cute_critters", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(critterObjToPOST) 
+    })
+    .then(r => r.json())
+    .then(postedCritter => { console.log("HEY THIS IS WHAT WE POSTED ->  ", postedCritter) 
+  
+     // 
+  
+    })
+
+    
+  }
+  const userTypingName =(sythEvent)=>{
+    console.log("typing...")
+    console.log(sythEvent.target.value)
+
+      if(sythEvent.target.value === "Sam"){ console.log("Ayeeee! ;)")}
+
+    setNameForCritter(sythEvent.target.value)
+
+
+  }
+
+
+
+
+
   return (
     <div className="App">
+
+
       <header className="App-header">
+      <>
         <div  onClick={fetchAhloggedInUser} >
           {showloggedInUserIfOneActive()}
           <img src={logo} className="App-logo" alt="logo" />
         </div>
-        
 
+      </>
+        
         <>
          <br></br>
          <br></br>
@@ -131,11 +215,54 @@ function App() {
 
 
 
+            ++++++++<br/>
+
+          <form onSubmit={addNewCritterFrontendAndBackendProcess}>
+
+
+            <label>
+              Name: <input onChange={userTypingName} value={nameForCritter} />
+            </label><br/>
+            <label>
+              Image: <input />
+            </label><br/>
+            <label>
+              Pal(User): <input />
+            </label><br/>
+
+
+            {/* This IS The Submit Button */}
+            <input type="submit" value="ADD A NEW CRITTER✨" />
+
+
+          </form>
+
+            ++++++++<br />
+
+            {/* #MORE-WORK 😅🎉 */}
+            {/* <input name="in1" />
+            <input />
+            <input />
+            <input />
+            <button>SUBMIT</button> */}
+
+
+
+        <>
+         <br></br>
+         <br></br>
+         <br></br>
+         <br></br>
+        </>
+
 
         {
-          users.map(eachUser =>{ return <User key={eachUser.id} userProp={eachUser}  
+          users.map(eachUser =>{ return <User key={eachUser.id} userProp={eachUser} allCritters={cuteCrtitters}
             inAppJsDeleteUser={inAppJsDeleteUser} 
           /> })
+        }
+        {
+          cuteCrtitters.map(eachCuteCritter =>{ return <CuteCritter key={eachCuteCritter.id} cuteCritterProp={eachCuteCritter} /> })
         }
 
 
